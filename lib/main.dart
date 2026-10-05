@@ -37,7 +37,7 @@ class Tile extends StatelessWidget {
       height: 60,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
-        color: switch(hitType) {
+        color: switch (hitType) {
           HitType.hit => Colors.green,
           HitType.partial => Colors.yellow,
           HitType.miss => Colors.grey,
@@ -65,16 +65,65 @@ class GamePage extends StatelessWidget {
       child: Column(
         spacing: 5.0,
         children: [
-         for (final guess in _game.guesses) 
-          Row(
-            spacing: 5.0,
-            children: [
-              for (final letter in guess)
-                Tile(letter.char, letter.type) 
-            ],
-          ) 
+          for (final guess in _game.guesses)
+            Row(
+              spacing: 5.0,
+              children: [
+                for (final letter in guess) Tile(letter.char, letter.type),
+              ],
+            ),
+          GuessInput(
+            onSubmitGuess: (guess) {
+              print(guess);
+            },
+          ),
         ],
       ),
+    );
+  }
+}
+
+class GuessInput extends StatelessWidget {
+  GuessInput({super.key, required this.onSubmitGuess});
+
+  final void Function(String) onSubmitGuess;
+  final TextEditingController _textEditingController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
+  void _onSubmit() {
+    onSubmitGuess(_textEditingController.text.trim());
+    _textEditingController.clear();
+    _focusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              autofocus: true,
+              controller: _textEditingController,
+              onSubmitted: (input) {
+                _onSubmit();
+              },
+              maxLength: 5,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(35)),
+                ),
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          padding: EdgeInsets.zero,
+          icon: const Icon(Icons.arrow_circle_up),
+          onPressed: _onSubmit,
+        ),
+      ],
     );
   }
 }
