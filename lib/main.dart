@@ -32,7 +32,9 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(microseconds: 500),
+      curve: Curves.bounceIn,
       width: 60,
       height: 60,
       decoration: BoxDecoration(
@@ -54,8 +56,14 @@ class Tile extends StatelessWidget {
   }
 }
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
   GamePage({super.key});
+
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
   final Game _game = Game();
 
   @override
@@ -74,7 +82,9 @@ class GamePage extends StatelessWidget {
             ),
           GuessInput(
             onSubmitGuess: (guess) {
-              print(guess);
+              setState(() {
+                _game.guess(guess);
+              });
             },
           ),
         ],
@@ -83,15 +93,22 @@ class GamePage extends StatelessWidget {
   }
 }
 
-class GuessInput extends StatelessWidget {
-  GuessInput({super.key, required this.onSubmitGuess});
+class GuessInput extends StatefulWidget {
+  const GuessInput({super.key, required this.onSubmitGuess});
 
   final void Function(String) onSubmitGuess;
+
+  @override
+  State<GuessInput> createState() => _GuessInputState();
+}
+
+class _GuessInputState extends State<GuessInput> {
   final TextEditingController _textEditingController = TextEditingController();
+
   final FocusNode _focusNode = FocusNode();
 
   void _onSubmit() {
-    onSubmitGuess(_textEditingController.text.trim());
+    widget.onSubmitGuess(_textEditingController.text.trim());
     _textEditingController.clear();
     _focusNode.requestFocus();
   }
